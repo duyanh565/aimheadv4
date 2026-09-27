@@ -23,6 +23,8 @@ const PUBLIC_DIR     = path.join(__dirname, 'public');
 const DATA_DIR       = process.env.DATA_DIR || process.env.RAILWAY_VOLUME_MOUNT_PATH || __dirname;
 const DB_PATH        = process.env.DB_PATH || path.join(DATA_DIR, 'jerry.db');
 const MAX_UPLOAD_BYTES = Math.max(1, Number(process.env.MAX_UPLOAD_MB || 25)) * 1024 * 1024;
+const KEY_PREFIX     = 'MAKEDNS-';
+const KEY_FORMAT     = /^MAKEDNS-[A-Z0-9]{8}$/;
 
 function requiredSecret(name) {
   const value = process.env[name];
@@ -571,9 +573,9 @@ app.get('/api/keys', requireAdmin, (req,res) => {
 });
 
 app.post('/api/keys', requireAdmin, (req,res) => {
-  const { prefix='MAKECHAM-', type='FREE', randLen=8, days=0, count=1, maxDevices=1, maxUses=0, note='' } = req.body;
-  if (String(prefix).toUpperCase() !== 'MAKECHAM-' || Number(randLen) !== 8) {
-    return res.status(400).json({ error:'Key phải giữ đúng định dạng MAKECHAM-XXXXXXXX' });
+  const { prefix=KEY_PREFIX, type='FREE', randLen=8, days=0, count=1, maxDevices=1, maxUses=0, note='' } = req.body;
+  if (String(prefix).toUpperCase() !== KEY_PREFIX || Number(randLen) !== 8) {
+    return res.status(400).json({ error:'Key phải giữ đúng định dạng MAKEDNS-XXXXXXXX' });
   }
   const safeCount=Math.min(Math.max(+count,1),50), safeLen=8;
   const keyType = type === 'VIP' ? 'VIP' : 'FREE';
@@ -586,7 +588,7 @@ app.post('/api/keys', requireAdmin, (req,res) => {
   const created=[];
   for (let i=0;i<safeCount;i++) {
     let v;
-    do { v='MAKECHAM-'+randStr(safeLen); } while (db.prepare('SELECT 1 FROM keys WHERE value=?').get(v));
+    do { v=KEY_PREFIX+randStr(safeLen); } while (db.prepare('SELECT 1 FROM keys WHERE value=?').get(v));
     stmt.run(v,keyType,expiry,daysDuration,safeDevices,safeUses,safeNote,'Make Cham');
     created.push({v});
   }
@@ -644,7 +646,7 @@ app.delete('/api/keys/:id/devices', requireAdmin, (req,res) => {
 // ── KEY VALIDATION ─────────────────────────────────────────────
 function resolveKey(keyVal, options = {}) {
   const normalized = String(keyVal || '').trim().toUpperCase();
-  if (!/^MAKECHAM-[A-Z0-9]{8}$/.test(normalized)) {
+  if (!KEY_FORMAT.test(normalized)) {
     return { ok:false, status:403, error:'Mã khóa không tồn tại hoặc sai định dạng!' };
   }
   const key = db.prepare('SELECT * FROM keys WHERE value=?').get(normalized);
@@ -665,7 +667,7 @@ app.post('/api/validate-key', (req,res) => {
   const ip=getIp(req);
   // Nếu client gửi deviceId hợp lệ → dùng deviceId (không đổi theo IP)
   // Nếu không (HTML cũ / Netlify chưa update) → fallback về fingerprint IP
-  const fp = (deviceId && /^MAKECHAM-[A-Z0-9]{8}$/.test(String(deviceId).toUpperCase()))
+  const fp = (deviceId && KEY_FORMAT.test(String(deviceId).toUpperCase()))
     ? String(deviceId).toUpperCase()
     : mkFingerprint(req);
   const normalizedKey = String(keyVal).trim().toUpperCase();
@@ -683,20 +685,20 @@ app.post('/api/validate-key', (req,res) => {
   }
 
   // Nhận dạng thiết bị
-  const isMakecham = fp.startsWith('MAKECHAM-');
+  const isMakedns = fp.startsWith(KEY_PREFIX);
   const devs = db.prepare('SELECT * FROM devices WHERE key_id=?').all(key.id);
 
   // Tìm bản ghi khớp fingerprint hiện tại
   let exists = devs.find(d => d.fingerprint === fp);
 
-  if (!exists && isMakecham) {
-    // Client mới gửi MAKECHAM ID — kiểm tra xem thiết bị này đã từng đăng ký
-    // bằng IP fingerprint cũ (HTML cũ) chưa. Nếu có → nâng cấp sang MAKECHAM ID
+  if (!exists && isMakedns) {
+    // Client mới gửi MAKEDNS ID — kiểm tra xem thiết bị này đã từng đăng ký
+    // bằng IP fingerprint cũ (HTML cũ) chưa. Nếu có → nâng cấp sang MAKEDNS ID
     // thay vì tạo slot mới (tránh lỗi vượt giới hạn thiết bị).
     const ipFp = mkFingerprint(req);
     const ipRecord = devs.find(d => d.fingerprint === ipFp);
     if (ipRecord) {
-      // Nâng cấp: ghi đè fingerprint cũ bằng MAKECHAM ID
+      // Nâng cấp: ghi đè fingerprint cũ bằng MAKEDNS ID
       db.prepare('UPDATE devices SET fingerprint=?,ip=?,last_seen=datetime("now") WHERE id=?')
         .run(fp, ip, ipRecord.id);
       addLog('Nâng cấp device ID', {keyVal, keyId:key.id, ip, message:'IP→'+fp});

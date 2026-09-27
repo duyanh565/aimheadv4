@@ -26,7 +26,7 @@
       <div class="eyebrow">Protected workspace</div>
       <h2>Nhập key để sử dụng</h2>
       <p>Key được xác thực ở server. Giao diện có thể bị chỉnh sửa, nhưng mọi thao tác NextDNS và tạo file vẫn cần phiên hợp lệ phía server.</p>
-      <input class="input" id="accessKey" type="text" autocomplete="off" placeholder="MAKECHAM-XXXXXXXX">
+      <input class="input" id="accessKey" type="text" autocomplete="off" placeholder="MAKEDNS-XXXXXXXX">
       <div class="device">Device ID: <span id="deviceId">Đang tạo…</span><button type="button" id="copyDevice">Sao chép Device ID</button></div>
       <button class="btn" id="loginBtn" type="button">Xác thực key</button>
       <div class="status" id="loginStatus"></div>
@@ -77,11 +77,11 @@
       function status(id,text,kind){var el=$(id);el.textContent=text||'';el.className='status '+(kind||'');}
       function getDeviceId(){
         var existing=localStorage.getItem('chams_device_id');
-        if(existing && /^MAKECHAM-[A-Z0-9]{8}$/.test(existing)) return existing;
+        if(existing && /^MAKEDNS-[A-Z0-9]{8}$/.test(existing)) return existing;
         var chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', bytes=new Uint8Array(8), out='';
         if(window.crypto&&crypto.getRandomValues) crypto.getRandomValues(bytes); else for(var i=0;i<8;i++) bytes[i]=Math.floor(Math.random()*256);
         bytes.forEach(function(b){out+=chars[b%chars.length];});
-        existing='MAKECHAM-'+out; localStorage.setItem('chams_device_id',existing); return existing;
+        existing='MAKEDNS-'+out; localStorage.setItem('chams_device_id',existing); return existing;
       }
       var DEVICE_ID=getDeviceId(); $('deviceId').textContent=DEVICE_ID;
       $('copyDevice').onclick=function(){navigator.clipboard?.writeText(DEVICE_ID).then(function(){status('loginStatus','Đã sao chép Device ID.','ok');}).catch(function(){});};

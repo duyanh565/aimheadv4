@@ -27,7 +27,7 @@ For persistent keys and logs, attach a Railway Volume and set `DATA_DIR` to its 
 - The browser receives only short-lived license sessions and color metadata, never the hidden patch template.
 - The validated Chams key is stored locally only to support automatic re-login after reload; it is sent only to the configured validation API and is removed when the server rejects it.
 - Key duration starts on the first successful key entry, preserving the original lazy-start behavior.
-- Key and device IDs keep the `MAKECHAM-XXXXXXXX` format.
+- Key and device IDs keep the `MAKEDNS-XXXXXXXX` format.
 - File patching, template construction, validation, and download-token creation happen on the server.
 - The mobileconfig builder updates NextDNS through the official API, does not persist the NextDNS API key, and requires the same short-lived license session for generation and download.
 - Invalid domains are reported in the result and skipped; valid domains still update NextDNS and generate the mobileconfig.
