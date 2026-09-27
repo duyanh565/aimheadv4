@@ -326,15 +326,8 @@ function requireLicense(req, res, next) {
 }
 
 // ── NextDNS + mobileconfig builder ────────────────────────────
-// NextDNS chấp nhận các hostname có số ở nhãn cuối và dấu "_" trong
-// nhãn (ví dụ: *.freefire.diamond.170 hoặc ...clang.1_0).
-// Vẫn giữ giới hạn độ dài và yêu cầu ít nhất hai nhãn để tránh nhận
-// chuỗi tùy ý không phải tên miền.
-const DOMAIN_RE = /^(?:\*\.)?(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9_-]{0,61}[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9_-]{0,61}[a-z0-9])?$/i;
-
 function parseDomainList(input) {
-  const valid = [];
-  const invalid = [];
+  const domains = [];
   const seen = new Set();
   for (const line of String(input || '').split(/\r?\n/)) {
     for (let token of line.split(/[\s,;]+/)) {
@@ -343,12 +336,11 @@ function parseDomainList(input) {
       token = token.replace(/^https?:\/\//i, '').split(/[/?#]/, 1)[0];
       if (token && !seen.has(token)) {
         seen.add(token);
-        if (DOMAIN_RE.test(token)) valid.push(token);
-        else invalid.push(original || token);
+        domains.push(token);
       }
     }
   }
-  return { valid, invalid };
+  return domains;
 }
 
 async function nextDnsRequest(apiKey, endpoint, method = 'GET', body) {
@@ -376,7 +368,7 @@ async function nextDnsRequest(apiKey, endpoint, method = 'GET', body) {
 }
 
 async function updateNextDnsList(apiKey, profileId, listName, domains) {
-  if (!domains.length) return { added: 0, skipped: 0 };
+  if (!domains.length) return { added: 0, skipped: 0, rejected: [] };
   const encodedId = encodeURIComponent(profileId);
   const currentData = await nextDnsRequest(apiKey, `/profiles/${encodedId}/${listName}`);
   const current = new Set(
@@ -385,19 +377,26 @@ async function updateNextDnsList(apiKey, profileId, listName, domains) {
   );
   let added = 0;
   let skipped = 0;
+  const rejected = [];
   for (const domain of domains) {
     if (current.has(domain)) {
       skipped++;
       continue;
     }
-    await nextDnsRequest(apiKey, `/profiles/${encodedId}/${listName}`, 'POST', {
-      id: domain,
-      active: true,
-    });
-    current.add(domain);
-    added++;
+    try {
+      await nextDnsRequest(apiKey, `/profiles/${encodedId}/${listName}`, 'POST', {
+        id: domain,
+        active: true,
+      });
+      current.add(domain);
+      added++;
+    } catch (error) {
+      // Một miền lỗi không được làm dừng cả danh sách. Giữ nguyên lỗi
+      // NextDNS để giao diện hiển thị đúng cho người dùng.
+      rejected.push({ domain, error: error?.message || 'NextDNS từ chối yêu cầu' });
+    }
   }
-  return { added, skipped };
+  return { added, skipped, rejected };
 }
 
 function xmlEscape(value) {
@@ -762,15 +761,8 @@ app.post('/api/mobileconfig/generate', requireLicense, async (req, res) => {
     return res.status(400).json({ error: 'File mobileconfig không hợp lệ.' });
   }
 
-  const allowParsed = parseDomainList(allowlist);
-  const denyParsed = parseDomainList(denylist);
-  const allow = allowParsed.valid;
-  const deny = denyParsed.valid;
-  const invalidDomains = [...allowParsed.invalid, ...denyParsed.invalid];
-  const overlap = allow.filter(domain => deny.includes(domain));
-  if (overlap.length) {
-    return res.status(400).json({ error: 'Miền không thể vừa cho phép vừa chặn: ' + overlap.slice(0, 12).join(', ') });
-  }
+  const allow = parseDomainList(allowlist);
+  const deny = parseDomainList(denylist);
   if (allow.length > 500 || deny.length > 500) {
     return res.status(400).json({ error: 'Mỗi danh sách tối đa 500 miền.' });
   }
@@ -828,10 +820,10 @@ app.post('/api/mobileconfig/generate', requireLicense, async (req, res) => {
       profileId: id,
       allowlist: allowResult,
       denylist: denyResult,
-      invalidDomains: {
-        allowlist: allowParsed.invalid,
-        denylist: denyParsed.invalid,
-        total: invalidDomains.length,
+      nextDnsRejected: {
+        allowlist: allowResult.rejected,
+        denylist: denyResult.rejected,
+        total: allowResult.rejected.length + denyResult.rejected.length,
       },
       profileIdReplacements: replaced.profileIdReplacements,
     });
