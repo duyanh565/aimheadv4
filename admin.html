@@ -196,7 +196,7 @@
           <div class="form-grid">
             <div class="form-group">
               <div class="form-label">Prefix</div>
-              <input class="form-input" id="cfx" value="MAKECHAM-" readonly>
+              <input class="form-input" id="cfx" value="MAKEDNS-" readonly>
             </div>
             <div class="form-group">
               <div class="form-label">Loại Key</div>
@@ -535,7 +535,7 @@
     var btn=document.getElementById('createBtn');
     btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Đang tạo...';
     var body={
-      prefix:document.getElementById('cfx').value||'MAKECHAM-',
+      prefix:document.getElementById('cfx').value||'MAKEDNS-',
       type:document.getElementById('ctype').value,
       randLen:parseInt(document.getElementById('clen').value)||8,
       days:parseInt(document.getElementById('cdays').value)||0,

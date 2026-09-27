@@ -47,13 +47,13 @@
       </div>
 
       <div class="card">
-        <div class="section-head"><div><div class="eyebrow">02 / Template</div><h2 class="title">Nạp file mẫu mobileconfig</h2><p class="sub">File mẫu nên có PayloadDisplayName, PayloadDescription và URL NextDNS hoặc placeholder <code>{{NEXTDNS_ID}}</code>.</p></div></div>
+        <div class="section-head"><div><div class="eyebrow">02 / Template</div><h2 class="title">Nạp file mẫu mobileconfig</h2><p class="sub">MAKE DNS TỰ ĐỘNG<code>{{NEXTDNS_ID}}</code>.</p></div></div>
         <div class="grid">
           <label class="field full"><span class="label">File mẫu</span><div class="file"><span id="fileLabel">Chưa chọn file</span><input id="templateFile" type="file" accept=".mobileconfig,.xml,application/x-apple-aspen-config,text/xml,application/xml"></div></label>
           <label class="field"><span class="label">Tên cấu hình</span><input class="input" id="configName" maxlength="120" placeholder="Ví dụ: Jerry NextDNS"></label>
           <label class="field"><span class="label">Mô tả cấu hình</span><input class="input" id="configDescription" maxlength="500" placeholder="Mô tả hiển thị trên thiết bị"></label>
         </div>
-        <div class="notice">Khi tạo, hệ thống sẽ thay tên và mô tả vào payload gốc; thay ID ở URL NextDNS hoặc phần sau <code>.antiban.</code>, rồi trả về file đã tạo.</div>
+        <div class="notice">Khi tạo, hệ thống sẽ thay tên và mô tả vào payload gốc; thay ID ở  <code>file</code>, rồi trả về file đã tạo.</div>
         <div class="actions"><button class="btn" id="generateBtn" type="button">Cập nhật NextDNS &amp; tạo file</button></div>
         <div class="status" id="buildStatus"></div>
       </div>
