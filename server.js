@@ -327,19 +327,22 @@ function requireLicense(req, res, next) {
 const DOMAIN_RE = /^(?:\*\.)?(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/i;
 
 function parseDomainList(input) {
-  const found = [];
+  const valid = [];
+  const invalid = [];
   const seen = new Set();
   for (const line of String(input || '').split(/\r?\n/)) {
     for (let token of line.split(/[\s,;]+/)) {
-      token = token.trim().toLowerCase().replace(/\.$/, '');
+      const original = token.trim();
+      token = original.toLowerCase().replace(/\.$/, '');
       token = token.replace(/^https?:\/\//i, '').split(/[/?#]/, 1)[0];
       if (token && !seen.has(token)) {
         seen.add(token);
-        found.push(token);
+        if (DOMAIN_RE.test(token)) valid.push(token);
+        else invalid.push(original || token);
       }
     }
   }
-  return found;
+  return { valid, invalid };
 }
 
 async function nextDnsRequest(apiKey, endpoint, method = 'GET', body) {
@@ -753,12 +756,11 @@ app.post('/api/mobileconfig/generate', requireLicense, async (req, res) => {
     return res.status(400).json({ error: 'File mobileconfig không hợp lệ.' });
   }
 
-  const allow = parseDomainList(allowlist);
-  const deny = parseDomainList(denylist);
-  const invalid = [...allow, ...deny].filter(domain => !DOMAIN_RE.test(domain));
-  if (invalid.length) {
-    return res.status(400).json({ error: 'Có miền không hợp lệ: ' + invalid.slice(0, 12).join(', ') });
-  }
+  const allowParsed = parseDomainList(allowlist);
+  const denyParsed = parseDomainList(denylist);
+  const allow = allowParsed.valid;
+  const deny = denyParsed.valid;
+  const invalidDomains = [...allowParsed.invalid, ...denyParsed.invalid];
   const overlap = allow.filter(domain => deny.includes(domain));
   if (overlap.length) {
     return res.status(400).json({ error: 'Miền không thể vừa cho phép vừa chặn: ' + overlap.slice(0, 12).join(', ') });
@@ -808,6 +810,9 @@ app.post('/api/mobileconfig/generate', requireLicense, async (req, res) => {
       filename: safeMobileConfigFilename(name),
       contentType: 'application/x-apple-aspen-config',
       licenseToken: req.headers.authorization.slice(7),
+      // Cho phép tải lại trong thời gian hiệu lực nếu người dùng hủy hộp
+      // thoại chia sẻ hoặc cần chọn lại "Lưu vào Tệp".
+      oneTime: false,
       expiry: Date.now() + 5 * 60 * 1000,
     });
     res.json({
@@ -817,6 +822,11 @@ app.post('/api/mobileconfig/generate', requireLicense, async (req, res) => {
       profileId: id,
       allowlist: allowResult,
       denylist: denyResult,
+      invalidDomains: {
+        allowlist: allowParsed.invalid,
+        denylist: denyParsed.invalid,
+        total: invalidDomains.length,
+      },
       profileIdReplacements: replaced.profileIdReplacements,
     });
   } catch (error) {
@@ -874,7 +884,7 @@ app.get('/api/download/:id', (req,res) => {
   if (entry.licenseToken && !constantTimeEqual(presentedToken, entry.licenseToken)) {
     return res.status(401).json({ error:'Cần phiên key hợp lệ để tải file.' });
   }
-  downloadStore.delete(req.params.id);
+  if (entry.oneTime !== false) downloadStore.delete(req.params.id);
   const safe=entry.filename.replace(/[^\x20-\x7E]/g,'_').replace(/["\\/]/g,'_');
   res.set({ 'Content-Type':entry.contentType || 'application/octet-stream', 'Content-Disposition':'attachment; filename="'+safe+'"; filename*=UTF-8\'\'' + encodeURIComponent(entry.filename), 'Cache-Control':'no-store' });
   res.send(entry.buf);

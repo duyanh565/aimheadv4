@@ -30,6 +30,8 @@ For persistent keys and logs, attach a Railway Volume and set `DATA_DIR` to its 
 - Key and device IDs keep the `MAKECHAM-XXXXXXXX` format.
 - File patching, template construction, validation, and download-token creation happen on the server.
 - The mobileconfig builder updates NextDNS through the official API, does not persist the NextDNS API key, and requires the same short-lived license session for generation and download.
+- Invalid domains are reported in the result and skipped; valid domains still update NextDNS and generate the mobileconfig.
+- The generated mobileconfig is downloaded only after the user presses the download button. On supported iPhone/iPad browsers, the button opens the share sheet so the user can choose “Save to Files”; desktop browsers use a normal file download fallback.
 - The mobileconfig builder replaces `PayloadDisplayName`, `PayloadDescription`, NextDNS URLs, `.antiban.<id>` suffixes, and the placeholders `{{CONFIG_NAME}}`, `{{CONFIG_DESCRIPTION}}`, `{{NEXTDNS_ID}}` or `{{PROFILE_ID}}`.
 - Removing or hiding the key screen in browser tools does not grant access: `/api/mobileconfig/generate`, `/api/engine-config`, `/api/patch-chams`, and protected downloads validate the license on the server.
 
