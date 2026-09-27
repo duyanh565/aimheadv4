@@ -31,7 +31,7 @@ For persistent keys and logs, attach a Railway Volume and set `DATA_DIR` to its 
 - File patching, template construction, validation, and download-token creation happen on the server.
 - The mobileconfig builder updates NextDNS through the official API, does not persist the NextDNS API key, and requires the same short-lived license session for generation and download.
 - Every non-empty normalized domain is sent to NextDNS. Each response is handled independently, so one rejected domain does not stop the rest; the UI shows NextDNS's original error beside the rejected domain while accepted domains still update and generate the mobileconfig.
-- Denylist entries are normalized to the same `*.domain` form used by the NextDNS web UI, whether the user enters the wildcard or not.
+- Denylist entries are sent to the NextDNS API as the base domain (for example, `example.com`); a leading `*.` is stripped whether or not the user enters it. Existing entries are compared in the same canonical form to avoid duplicates.
 - The generated mobileconfig is downloaded only after the user presses the download button. On supported iPhone/iPad browsers, the button opens the share sheet so the user can choose “Save to Files”; desktop browsers use a normal file download fallback.
 - The mobileconfig builder replaces `PayloadDisplayName`, `PayloadDescription`, NextDNS URLs, `.antiban.<id>` suffixes, and the placeholders `{{CONFIG_NAME}}`, `{{CONFIG_DESCRIPTION}}`, `{{NEXTDNS_ID}}` or `{{PROFILE_ID}}`.
 - Removing or hiding the key screen in browser tools does not grant access: `/api/mobileconfig/generate`, `/api/engine-config`, `/api/patch-chams`, and protected downloads validate the license on the server.

@@ -344,10 +344,11 @@ function parseDomainList(input) {
 }
 
 function normalizeNextDnsDomain(domain, listName) {
-  // NextDNS lưu miền trong Denylist theo dạng wildcard, giống giao diện
-  // my.nextdns.io: *.example.com. Cho phép người dùng nhập cả hai dạng.
-  if (listName === 'denylist' && !domain.startsWith('*.')) return '*.' + domain;
-  return domain;
+  // NextDNS UI có thể hiển thị denylist với tiền tố wildcard, nhưng API
+  // nhận domain gốc (ví dụ example.com). Chuẩn hóa cả input và dữ liệu GET
+  // để không gửi *.example.com và không thêm trùng domain đã có.
+  const normalized = String(domain || '').trim().toLowerCase().replace(/\.$/, '');
+  return listName === 'denylist' ? normalized.replace(/^\*\./, '') : normalized;
 }
 
 async function nextDnsRequest(apiKey, endpoint, method = 'GET', body) {
@@ -380,7 +381,7 @@ async function updateNextDnsList(apiKey, profileId, listName, domains) {
   const currentData = await nextDnsRequest(apiKey, `/profiles/${encodedId}/${listName}`);
   const current = new Set(
     (Array.isArray(currentData) ? currentData : currentData?.items || [])
-      .map(entry => String(entry?.id || '').toLowerCase())
+      .map(entry => normalizeNextDnsDomain(entry?.id || '', listName))
   );
   let added = 0;
   let skipped = 0;
