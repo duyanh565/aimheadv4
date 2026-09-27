@@ -1,0 +1,18 @@
+{
+  "name": "jerry-chams-server",
+  "version": "1.0.0",
+  "description": "Secure Railway server for the Jerry Mod Test Chams client and admin UI",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2"
+  }
+}

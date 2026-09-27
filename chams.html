@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#000f00">
+  <title>Jerry Mod TOOL Pro - VIP</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --bg: #07070d;
+      --bg2: #000000;
+      --bg3: #0e0e17;
+      --bg4: #141424;
+      --bg5: #1a1a2e;
+      --border: rgba(0, 232, 122, 0.15);
+      --border2: rgba(0, 232, 122, 0.3);
+      --border3: rgba(0, 232, 122, 0.5);
+      --text: #e8e8f0;
+      --text2: #6b6b88;
+      --text3: #4a4a60;
+      --red: #ff3355;
+      --green: #00e87a;
+      --blue: #3b82f6;
+      --cyan: #00f0ff;
+      --magenta: #ff00ff;
+      --purple: #bf55ec;
+      --amber: #ffaa00;
+      --gold: #FFD700;
+      --primary: #00e87a;
+      --secondary: #bf55ec;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      --glow-green: 0 0 20px rgba(0, 232, 122, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font);
+      user-select: none;
+      -webkit-user-select: none;
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      padding-bottom: 40px;
+      max-width: 480px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    ::-webkit-scrollbar { width: 3px; height: 3px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+    @keyframes pulseDot { 0%, 100% { box-shadow: 0 0 6px var(--green); } 50% { box-shadow: 0 0 14px var(--green), 0 0 4px var(--green); } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes spinR { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes redGlowPulse {
+      0%, 100% { box-shadow: 0 0 14px rgba(0, 232, 122, 0.4), 0 0 28px rgba(0, 232, 122, 0.15); border-bottom-color: rgba(0, 232, 122, 0.5); }
+      50% { box-shadow: 0 0 28px rgba(0, 232, 122, 0.6), 0 0 50px rgba(0, 232, 122, 0.8); border-bottom-color: rgba(0, 232, 122, 0.8); }
+    }
+
+    /* HEADER STYLE */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: linear-gradient(135deg, rgba(7, 7, 13, 0.99), rgba(0, 0, 0, 0.98));
+      border-bottom: 2px solid var(--green);
+      border-radius: 0 0 22px 22px;
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      animation: redGlowPulse 2.5s ease-in-out infinite;
+    }
+    
+    .header-left { display: flex; flex-direction: row; align-items: center; gap: 10px; position: relative; z-index: 1; }
+    .header-left-text { display: flex; flex-direction: column; gap: 2px; }
+    .header-title { font-size: 18px; font-weight: 900; letter-spacing: 0.5px; color: var(--text); line-height: 1; }
+    .header-title span { color: var(--green); text-shadow: 0 0 12px rgba(0,232,122,0.7); }
+    .header-status { display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--text2); }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--red); }
+    .status-dot.on { background: var(--green); box-shadow: 0 0 8px var(--green); animation: pulseDot 2s infinite; }
+    .header-right { display: flex; align-items: center; gap: 6px; position: relative; z-index: 1; }
+    
+    .hdr-btn {
+      width: 36px; height: 36px; border-radius: 14px; background: var(--bg3); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 15px; color: var(--text2); transition: all 0.25s; position: relative;
+    }
+    .hdr-btn:hover { background: var(--bg4); border-color: var(--border2); color: var(--text); transform: scale(1.05); }
+    .hdr-btn .badge-dot { position: absolute; top: 5px; right: 5px; width: 7px; height: 7px; border-radius: 50%; background: var(--green); border: 2px solid var(--bg); display: none; }
+    
+    .key-badge {
+      display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 10px;
+      font-size: 10px; font-weight: 700; background: rgba(0, 232, 122, 0.08); border: 1px solid var(--green); color: var(--green); box-shadow: 0 0 10px rgba(0, 232, 122, 0.1); text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .key-badge.active { background: rgba(0, 232, 122, 0.08); border-color: var(--green); color: var(--green); }
+
+    /* LOCK SCREEN */
+    .outer-lock-screen {
+      position: fixed; inset: 0; background: #07070d; z-index: 9999; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; padding: 24px; max-width: 480px; margin: 0 auto;
+      overflow: hidden; touch-action: none; height: 100vh; height: -webkit-fill-available;
+    }
+    .outer-lock-screen.unlocked-hide { display: none !important; }
+    .outer-logo-title { font-size: 42px; font-weight: 900; color: #fff; letter-spacing: 1px; text-align: center; }
+    .outer-logo-title span { color: #00e87a; text-shadow: 0 0 20px rgba(0,232,122,0.7); }
+    .outer-logo-sub { font-size: 11px; color: #6b6b88; text-transform: uppercase; letter-spacing: 2px; margin-top: 8px; text-align: center; margin-bottom: 40px; }
+    .outer-form-box { width: 100%; border: 1.5px solid #00e87a; border-radius: 24px; padding: 28px 20px; background: #000; box-shadow: 0 0 30px rgba(0,232,122,0.15); margin-bottom: 20px; }
+    .outer-input-title { font-size: 13px; font-weight: 800; color: #00e87a; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 18px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .outer-input-container { width: 100%; background: #101017; border: 1px solid #1f2937; border-radius: 16px; padding: 14px 16px; margin-bottom: 16px; }
+    .outer-input-field { width: 100%; background: transparent; border: none; color: #fff; font-size: 15px; text-align: center; outline: none; }
+    .outer-submit-btn { width: 100%; background: #00e87a; border: none; color: #000; padding: 16px; font-size: 14px; font-weight: 900; border-radius: 16px; cursor: pointer; text-transform: uppercase; letter-spacing: 1.5px; box-shadow: 0 4px 20px rgba(0,232,122,0.3); transition: all 0.2s ease; }
+    .outer-submit-btn:active { transform: scale(0.98); opacity: 0.9; }
+    .outer-status-msg { font-size: 12px; color: #38bdf8; text-align: center; margin-top: 16px; font-weight: 500; }
+    .outer-device-box { width: 100%; background: #000; border: 1px solid rgba(0,232,122,0.3); border-radius: 16px; padding: 14px 16px; margin-bottom: 12px; text-align: center; }
+    .outer-device-label { font-size: 10px; font-weight: 700; color: #6b6b88; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px; }
+    .outer-device-id { font-family: monospace; font-size: 15px; font-weight: 900; color: #00e87a; letter-spacing: 2px; }
+    .outer-device-copy { margin-top: 6px; font-size: 10px; color: #38bdf8; cursor: pointer; }
+    .outer-telegram-link { width: 100%; background: #000; border: 1px solid #141424; color: #fff; padding: 14px; font-size: 13px; font-weight: 700; border-radius: 16px; display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; transition: all 0.25s; }
+    .outer-telegram-link:hover { border-color: #00e87a; }
+
+    /* KEY INFO (profile) */
+    .key-info-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 13px; }
+    .key-info-label { color: #6b6b88; }
+    .key-info-value { font-weight: bold; color: #fff; }
+    .key-expiry-countdown { color: var(--amber) !important; }
+
+    h2 {
+      font-size: 12px; text-transform: uppercase; letter-spacing: .12em; color: var(--secondary); margin: 20px 0 10px; border-bottom: 1px solid var(--border); padding-bottom: 6px;
+    }
+    .hint { color: var(--text2); font-size: 11px; }
+    #drop {
+      border: 2px dashed var(--border2); border-radius: var(--radius-md); padding: 20px 16px; text-align: center; cursor: pointer; background: var(--bg3); margin-bottom: 12px; transition: all 0.2s;
+    }
+    #drop.hover { border-color: var(--green); background: var(--bg4); }
+    #drop b { color: var(--text); font-size: 13px; }
+    #file { display: none; }
+
+    button {
+      background: var(--bg3); color: var(--text); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 16px; cursor: pointer; font-size: 12px; font-weight: 600; transition: all .15s ease;
+    }
+    button:hover:not(:disabled) { background: var(--bg4); border-color: var(--border2); }
+    button:disabled { opacity: .3; cursor: not-allowed; }
+    button.primary {
+      background: var(--green); color: #000000; border-color: var(--green); font-weight: 800; box-shadow: var(--glow-green);
+    }
+    button.primary:hover:not(:disabled) { background: #00ff88; box-shadow: 0 0 20px rgba(0,232,122,0.5); }
+
+    textarea {
+      background: #06090e; color: #34d399; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px; font-family: "Consolas", monospace; font-size: 11px; width: 100%; height: 90px; resize: vertical; margin-top: 6px;
+    }
+    textarea:focus { outline: none; border-color: var(--green); }
+
+    input[type="text"] {
+      background: var(--bg3); color: var(--text); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 10px; font: 12px "Consolas", monospace; width: 100%;
+    }
+    input[type="text"]:focus { outline: none; border-color: var(--green); }
+    input[type="color"] { width: 45px; height: 34px; padding: 0; background: none; border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; }
+
+
+    /* COLOR MASK CARDS */
+    .card-mask {
+      background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px; margin-bottom: 10px;
+    }
+    .card-mask header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .card-mask header .title { font-weight: 700; color: var(--cyan); font-size: 12px; }
+    .mask-grid { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; }
+    .swatch { width: 45px; height: 34px; border-radius: var(--radius-sm); border: 1px solid var(--border); position: relative; overflow: hidden; background: #2c3540; }
+    .swatch::after { content: ""; position: absolute; inset: 0; background: var(--c, transparent); }
+
+    .btn-inline-clear {
+      background: rgba(255,51,85,0.08); color: var(--red); border: 1px solid rgba(255,51,85,0.4); border-radius: var(--radius-sm);
+      padding: 4px 9px; font-size: 10px; font-weight: 700; cursor: pointer; white-space: nowrap;
+    }
+    .btn-inline-clear:hover { background: rgba(255,51,85,0.18); }
+    .field-label-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+
+    /* STATUS BAR */
+    .status { margin-top: 10px; padding: 10px 14px; border-radius: var(--radius-sm); font-size: 11px; font-weight: 600; display: block; }
+    .status.ok  { background: rgba(0,232,122,0.1); border: 1px solid var(--green); color: #00e87a; }
+    .status.err { background: rgba(255,51,85,0.1); border: 1px solid var(--red); color: #ff3355; }
+
+    /* OUTPUT HEX BLOCK */
+    .output-hex-container { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px; margin-top: 14px; }
+    .hex-scroll-box {
+      background: #06090e; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px; font-family: "Consolas", monospace; font-size: 11px; color: #34d399; word-break: break-all; max-height: 120px; overflow-y: auto; white-space: pre-wrap; cursor: pointer; margin-top: 6px;
+    }
+    .hex-scroll-box:hover { background: #0c1017; }
+    .copy-tip { font-size: 10px; color: var(--text2); margin-top: 4px; text-align: right; font-style: italic; }
+
+    /* PROGRESS BAR */
+    .progress-wrap { background: var(--bg3); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; margin-top: 14px; display: none; }
+    .progress-wrap.show { display: block; }
+    .progress-label { font-size: 11px; color: var(--text2); margin-bottom: 8px; display: flex; justify-content: space-between; }
+    .progress-bar { height: 6px; background: var(--bg4); border-radius: 6px; overflow: hidden; }
+    @keyframes progressShimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+    .progress-fill { height: 100%; width: 0%; border-radius: 6px; background: linear-gradient(90deg, var(--green), #00f0a0, var(--green)); background-size: 200% 100%; animation: progressShimmer 1.5s linear infinite; }
+    .progress-fill.done { animation: none; background: var(--green); }
+
+    /* CARD & TOOLBAR — đồng bộ theo giao diện mẫu */
+    .card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px; margin-bottom: 16px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4); }
+    .card-title { font-weight: 700; color: var(--cyan); font-size: 12px; }
+    .toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
+
+    /* MAIN PADDING & NAV */
+    .main { padding: 12px 14px 110px; max-width: 480px; margin: 0 auto; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+
+    .footer-nav {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; padding: 8px 12px 16px; display: flex; align-items: center; justify-content: space-around; background: linear-gradient(to top, rgba(7, 7, 13, 0.99), rgba(0, 0, 0, 0.96)); border-top: 1px solid var(--border); z-index: 90; backdrop-filter: blur(20px);
+    }
+    .nav-btn { flex: 1; background: none; border: none; padding: 6px 4px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; border-radius: 14px; color: var(--text3); transition: all 0.25s; }
+    .nav-btn.active { color: var(--green); }
+    .nav-icon { font-size: 16px; line-height: 1; }
+    .nav-label { font-size: 9px; font-weight: 700; text-transform: uppercase; }
+
+    .overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); z-index: 700; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    .overlay.show { opacity: 1; pointer-events: all; }
+    .sheet { background: #000000; border-top: 2px solid var(--green); border-radius: 24px 24px 0 0; width: 100%; max-width: 480px; max-height: 85vh; overflow-y: auto; padding: 16px; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+    .overlay.show .sheet { transform: translateY(0); }
+    .sheet-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; font-size: 13px; font-weight: 700; color: var(--green); }
+    .sheet-close { width: 28px; height: 28px; border-radius: 50%; background: var(--bg3); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; }
+    .footer { margin-top: 30px; color: var(--text3); font-size: 10px; text-align: center; border-top: 1px solid var(--border); padding-top: 12px; }
+  </style>
+</head>
+
+<body>
+
+  <!-- LOCK SCREEN: Nhập Key trước khi vào tool -->
+  <div class="outer-lock-screen" id="outerLockScreen">
+    <div class="outer-logo-title">Jerry<span>Mod</span></div>
+    <div class="outer-logo-sub">Tool Test Chams Jerry Mod</div>
+    <div class="outer-form-box">
+      <div class="outer-input-title"><i class="fas fa-shield-halved"></i> Nhập Key VIP Để Sử Dụng</div>
+      <div class="outer-input-container">
+        <input type="text" class="outer-input-field" id="outerKeyField" placeholder="Nhập mã Chams Key của bạn vào đây...">
+      </div>
+      <button id="btnValidateOuterKey" class="outer-submit-btn" onclick="validateOuterKey()">Xác Nhận Kích Hoạt Menu</button>
+      <div class="outer-status-msg" id="outerStatusMsg">Đang chờ nhập dữ liệu mã khóa...</div>
+    </div>
+    <div class="outer-device-box">
+      <div class="outer-device-label"><i class="fas fa-microchip"></i> ID Thiết Bị Của Bạn</div>
+      <div class="outer-device-id" id="lockDeviceId">—</div>
+      <div class="outer-device-copy" onclick="copyLockDeviceId()"><i class="fas fa-copy"></i> Nhấn để sao chép ID</div>
+    </div>
+    <a href="https://t.me/jerry19_05" target="_blank" class="outer-telegram-link">
+      <i class="fab fa-telegram-plane" style="color:#229ed9;font-size:16px;"></i> Lấy Key Tại Kênh Telegram
+    </a>
+  </div>
+
+  <!-- HEADER GIAO DIỆN CHÍNH -->
+  <div class="header">
+    <div class="header-left">
+      <div class="header-left-text">
+        <div class="header-title">Jerry<span>Mod</span></div>
+        <div class="header-status">
+          <span class="status-dot" id="statusDot"></span>
+          <span id="statusText">Chưa kích hoạt</span>
+        </div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="key-badge" id="keyBadge" onclick="openSheet('keyInfoOverlay')">
+        <i class="fa-solid fa-key"></i> <span id="keyBadgeText">LOGIN</span>
+      </div>
+      <div class="hdr-btn" onclick="openNotifSheet()">
+        <i class="fa-solid fa-bell"></i>
+        <span class="badge-dot" id="notifDot" style="display:inline-block;"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- NỘI DUNG CHÍNH -->
+  <div class="main">
+
+    <div class="tab-content active" id="tab-home">
+      
+      <!-- Khối ẩn nạp cấu trúc màu mặc định -->
+      <div class="card" style="display: none;">
+        <textarea id="txtCustomColorInput"></textarea>
+        <button id="btnLoadCustomColor">⚡ Nạp Mã</button>
+      </div>
+
+      <h2>CHỌN MÀU ĐÚNG YÊU CẦU CỦA BẠN</h2>
+      <div class="toolbar" style="margin-bottom: 10px;">
+        <button id="btnReset">↺ Reset Màu Gốc</button>
+        <span class="hint">Hệ thống nạp phôi cấu trúc màu tự động</span>
+      </div>
+
+
+      <section id="secMask">
+        <div id="masks"></div>
+      </section>
+
+      <section id="secOutputHex">
+        <div class="output-hex-container">
+          <span class="hint">Bấm vào khung dưới để xem chuỗi HEX màu đã chỉnh:</span>
+          <div id="hexOutputBox" class="hex-scroll-box">Đang chờ dữ liệu màu từ server...</div>
+          <div id="copyTip" class="copy-tip"></div>
+        </div>
+      </section>
+
+      <h2>CHẠY TOOL THAY ĐỔI MÀU</h2>
+      <div id="drop" tabindex="0">
+        <div><b>CHỌN FILE GỐC CẦN MAKE</b> TOOL MAKE FILE TỰ ĐỘNG</div>
+        <div id="fileDropInfo" class="hint" style="margin-top:4px; color: var(--green);">Chưa nạp file gốc</div>
+      </div>
+      <input id="file" type="file" accept=".dat,application/octet-stream">
+
+      <div class="card">
+        <div style="margin-bottom: 8px;">
+          <span class="hint" style="color: var(--green); font-weight: 700;">CẢM ƠN ĐÃ MUA HÀNG</span>
+        </div>
+        <div>
+          <div class="field-label-row">
+            <span class="hint">Mã HEX thay thế được tạo tự động:</span>
+            <button id="btnClearReplaceHex" class="btn-inline-clear" type="button">🗑️ Xóa Hex Cũ</button>
+          </div>
+          <span class="hint">Màu đã chọn sẽ được server kiểm tra và áp dụng vào file.</span>
+          <textarea id="txtReplaceHex" aria-hidden="true" tabindex="-1" style="display:none;"></textarea>
+        </div>
+        <div class="toolbar" style="margin-top: 12px;">
+          <button id="btnExecutePatch" class="primary" style="width: 100%; padding: 12px;" onclick="doPatchServer()">🚀 Chạy Quét & Ghi Đè File</button>
+        </div>
+      </div>
+
+      <div class="progress-wrap" id="patchProgress">
+        <div class="progress-label"><span id="patchProgressLabel">Đang upload & patch...</span><span id="patchProgressPct">0%</span></div>
+        <div class="progress-bar"><div class="progress-fill" id="patchProgressFill"></div></div>
+      </div>
+
+      <div id="status" class="status ok">Hệ thống đang sẵn sàng...</div>
+
+      <div class="toolbar" style="margin-top: 14px; justify-content: center;">
+        <button id="btnSave" class="primary" style="font-size: 13px; padding: 12px 24px; width: 100%;" disabled>💾 TẢI FILE THÀNH PHẨM _JerryMod</button>
+      </div>
+
+      <div class="footer">
+        Bản quyền giao diện &amp; tính năng thuộc về JERRY MOD © 2026.
+      </div>
+
+    </div>
+
+    <!-- TAB INFO: THÔNG TIN RAM & LIÊN HỆ -->
+    <div class="tab-content" id="tab-info">
+      <div class="card" style="background:var(--bg3); border:1px solid var(--border);">
+        <div class="card-title" style="color:var(--green); font-size:12px; font-weight:700; margin-bottom:10px;"><i class="fa-solid fa-server"></i> TRẠNG THÁI HỆ THỐNG LIVE</div>
+        <div style="font-size: 13px; margin-bottom: 8px;">Dung lượng RAM: <b style="color:var(--green);" id="ramLiveText">1,240 MB</b></div>
+        <div style="font-size: 11px; color: var(--text2);">Bản quyền phần mềm thuộc về JERRY MOD © 2026.</div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:var(--green); font-size:12px; font-weight:700; margin-bottom:10px;"><i class="fa-solid fa-address-book"></i> Liên hệ Hỗ trợ</div>
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
+          <a href="https://zalo.me/0559376085" target="_blank" class="outer-telegram-link" style="background:var(--bg2);"><i class="fa-solid fa-comment-sms" style="color:#0068ff;"></i> Zalo Admin: 0559376085</a>
+          <a href="https://t.me/jerry19_05" target="_blank" class="outer-telegram-link" style="background:var(--bg2);"><i class="fa-brands fa-telegram" style="color:#229ed9;"></i> Telegram: @jerry19_05</a>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:var(--green); font-size:12px; font-weight:700; margin-bottom:10px;"><i class="fa-solid fa-shield-halved"></i> Thông tin Key</div>
+        <div class="key-info-row"><span class="key-info-label">Phân hệ:</span><span class="key-info-value" style="color:var(--cyan);">Test Chams</span></div>
+        <div class="key-info-row"><span class="key-info-label">Mã Key:</span><span class="key-info-value" id="infoKeyVal" style="font-family:monospace;color:var(--gold);font-size:11px;">Chưa kích hoạt</span></div>
+        <div class="key-info-row"><span class="key-info-label">Hết hạn:</span><span class="key-info-value" id="infoExpiry">—</span></div>
+        <div class="key-info-row"><span class="key-info-label">Còn lại:</span><span class="key-info-value key-expiry-countdown" id="infoCountdown">—</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- NAVIGATION BAR BÊN DƯỚI -->
+  <nav class="footer-nav">
+    <button class="nav-btn active" id="nav-home" onclick="navTabLink('home')">
+      <i class="fa-solid fa-house nav-icon"></i>
+      <span class="nav-label">Home Tool</span>
+    </button>
+    <button class="nav-btn" id="nav-info" onclick="navTabLink('info')">
+      <i class="fa-solid fa-circle-info nav-icon"></i>
+      <span class="nav-label">Thông tin</span>
+    </button>
+  </nav>
+
+  <!-- OVERLAY THÔNG BÁO -->
+  <div class="overlay" id="notifOverlay">
+    <div class="sheet">
+      <div class="sheet-title"><span>Thông báo hệ thống</span><div class="sheet-close" onclick="closeSheet('notifOverlay')">✕</div></div>
+      <div class="hint" style="font-size:12px; line-height:1.6; color:white;">
+        <br>
+        <br>
+        <br>
+        
+      </div>
+    </div>
+  </div>
+
+  <!-- OVERLAY THÔNG TIN KEY -->
+  <div class="overlay" id="keyInfoOverlay">
+    <div class="sheet">
+      <div class="sheet-title"><span><i class="fa-solid fa-key"></i> Thông tin Key</span><div class="sheet-close" onclick="closeSheet('keyInfoOverlay')">✕</div></div>
+      <div class="key-info-row"><span class="key-info-label">Mã Key:</span><span class="key-info-value" id="sheetKeyVal" style="font-family:monospace;color:var(--gold);font-size:11px;">—</span></div>
+      <div class="key-info-row"><span class="key-info-label">ID Thiết bị:</span><span class="key-info-value" id="sheetDeviceId" style="font-family:monospace;color:var(--cyan);font-size:11px;">—</span></div>
+      <div class="key-info-row"><span class="key-info-label">Loại:</span><span class="key-info-value" id="sheetKeyType">—</span></div>
+      <div class="key-info-row"><span class="key-info-label">Hết hạn:</span><span class="key-info-value" id="sheetExpiry">—</span></div>
+    </div>
+  </div>
+
+  <script>
+    // Khi chạy qua server, __API_BASE__ được thay bằng origin hiện tại.
+    // Khi Netlify phục vụ HTML tĩnh, dùng API Railway như bản HTML cũ.
+    var API_BASE = '__API_BASE__';
+    if (API_BASE === '__API_BASE__') API_BASE = 'https://chamv2-production.up.railway.app/api';
+
+    // ── Device ID — định danh thiết bị cố định, không đổi theo IP ──
+    function getOrCreateDeviceId() {
+      var stored = localStorage.getItem('chams_device_id');
+      if (stored && /^MAKECHAM-[A-Z0-9]{8}$/.test(stored)) return stored;
+      var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      var rand = '';
+      var arr = new Uint8Array(8);
+      crypto.getRandomValues(arr);
+      arr.forEach(function(b){ rand += chars[b % chars.length]; });
+      var id = 'MAKECHAM-' + rand;
+      localStorage.setItem('chams_device_id', id);
+      return id;
+    }
+    var DEVICE_ID = getOrCreateDeviceId();
+    // Hiện ID ngay trên màn hình khóa
+    document.getElementById('lockDeviceId').textContent = DEVICE_ID;
+
+    function copyLockDeviceId() {
+      navigator.clipboard.writeText(DEVICE_ID).then(function() {
+        var el = document.querySelector('.outer-device-copy');
+        el.textContent = '✅ Đã sao chép!';
+        setTimeout(function(){ el.innerHTML = '<i class="fas fa-copy"></i> Nhấn để sao chép ID'; }, 2000);
+      }).catch(function() {
+        // fallback cho trình duyệt cũ
+        var ta = document.createElement('textarea');
+        ta.value = DEVICE_ID; ta.style.position='fixed'; ta.style.opacity='0';
+        document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+        document.body.removeChild(ta);
+        var el = document.querySelector('.outer-device-copy');
+        el.textContent = '✅ Đã sao chép!';
+        setTimeout(function(){ el.innerHTML = '<i class="fas fa-copy"></i> Nhấn để sao chép ID'; }, 2000);
+      });
+    }
+
+    var isKeyVerified = false;
+    var licenseToken  = null;
+    var currentColors = {};
+    var loadedFile    = null;
+    var loadedFileName = '';
+    var countdownId   = null;
+    var serverDownloadId = null; // download ID từ server sau khi patch
+
+    // ── Key validation ────────────────────────────────────────
+    async function validateOuterKey() {
+      var inputKey = document.getElementById('outerKeyField').value.trim();
+      var msgEl = document.getElementById('outerStatusMsg');
+      if (!inputKey) { msgEl.style.color='var(--red)'; msgEl.textContent='Vui lòng nhập chuỗi mã khóa!'; return; }
+      msgEl.style.color='#38bdf8'; msgEl.textContent='Đang kiểm tra dữ liệu mã khóa...';
+      try {
+        var r = await fetch(API_BASE + '/validate-key', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ key: inputKey, deviceId: DEVICE_ID })
+        });
+        var d = await r.json();
+        if (!r.ok || !d.success) { msgEl.style.color='var(--red)'; msgEl.textContent=d.error||'Mã khóa không hợp lệ!'; return; }
+        if (d.active === false || d.active === 0) {
+          msgEl.style.color='var(--red)';
+          msgEl.textContent='🔒 Key đã bị khoá! Liên hệ Admin để mở khoá.';
+          return;
+        }
+        localStorage.setItem('chams_saved_key', inputKey.toUpperCase());
+        proceedLoginSuccess(d.licenseToken, d.type, d.expiry);
+      } catch(e) { msgEl.style.color='var(--red)'; msgEl.textContent='Lỗi kết nối máy chủ!'; }
+    }
+
+    // Tự khôi phục giống admin.html: điền lại Key vào ô rồi tự bấm nút xác nhận.
+    function autoRestoreChamsLogin() {
+      var savedKey = localStorage.getItem('chams_saved_key');
+      if (!savedKey) return;
+      var field = document.getElementById('outerKeyField');
+      var button = document.getElementById('btnValidateOuterKey');
+      if (!field || !button) return;
+      field.value = savedKey;
+      var msgEl = document.getElementById('outerStatusMsg');
+      msgEl.style.color = '#38bdf8';
+      msgEl.textContent = 'Đang tự động xác nhận Key đã lưu...';
+      // Gọi đúng hành vi của nút Xác Nhận, không tạo luồng đăng nhập khác.
+      button.click();
+    }
+
+    function formatExpiry(ts) {
+      if (!ts || ts <= 0) return 'Vĩnh viễn (Không giới hạn)';
+      var d = new Date(ts);
+      if (isNaN(d)) return 'Không xác định';
+      return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0')+
+             ' - '+String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear();
+    }
+
+    function startCountdown(expiryTs) {
+      if (countdownId) clearInterval(countdownId);
+      var el = document.getElementById('infoCountdown');
+      if (!expiryTs || expiryTs <= 0) { el.textContent='Vô thời hạn'; return; }
+      function tick() {
+        var diff = expiryTs - Date.now();
+        if (diff <= 0) { el.textContent='Đã hết hạn!'; el.style.color='var(--red)'; clearInterval(countdownId); setTimeout(()=>location.reload(),2000); return; }
+        var dd=Math.floor(diff/86400000), hh=Math.floor((diff%86400000)/3600000), mm=Math.floor((diff%3600000)/60000), ss=Math.floor((diff%60000)/1000);
+        el.textContent=dd+'d '+String(hh).padStart(2,'0')+'h '+String(mm).padStart(2,'0')+'m '+String(ss).padStart(2,'0')+'s';
+      }
+      tick(); countdownId = setInterval(tick, 1000);
+    }
+
+    async function proceedLoginSuccess(token, type, expiry) {
+      isKeyVerified = true; licenseToken = token;
+      document.getElementById('statusDot').className = 'status-dot on';
+      document.getElementById('statusText').textContent = 'Đã kích hoạt (' + type + ')';
+      document.getElementById('keyBadge').className = 'key-badge active';
+      document.getElementById('keyBadgeText').textContent = 'LICENSED';
+      sessionStorage.setItem('verified_chams_session', token);
+      // Cập nhật UI thông tin key
+      var expText = formatExpiry(expiry);
+      document.getElementById('infoKeyVal').textContent = 'Đã xác thực trên server';
+      document.getElementById('infoExpiry').textContent = expText;
+      document.getElementById('sheetKeyVal').textContent   = 'Đã xác thực trên server';
+      document.getElementById('sheetDeviceId').textContent = DEVICE_ID;
+      document.getElementById('sheetKeyType').textContent  = type;
+      document.getElementById('sheetExpiry').textContent   = expText;
+      startCountdown(expiry);
+      // Ẩn lock screen
+      document.getElementById('outerLockScreen').classList.add('unlocked-hide');
+      document.body.style.overflow = 'auto';
+      await loadEngineConfig();
+    }
+
+    // ── Navigation ────────────────────────────────────────────
+    function navTabLink(tabName) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById('tab-' + tabName).classList.add('active');
+      document.getElementById('nav-' + tabName).classList.add('active');
+    }
+
+    function openNotifSheet() { document.getElementById('notifOverlay').classList.add('show'); document.getElementById('notifDot').style.display='none'; }
+    function openSheet(id) { document.getElementById(id).classList.add('show'); }
+    function closeSheet(id) { document.getElementById(id).classList.remove('show'); }
+
+    // =========================================================================
+    // UI màu — mọi template, offset và patch đều chạy ở server.
+    // =========================================================================
+
+    var loadedFileBytes = null;
+    var currentFileName = '';
+
+    function setStatus(msg, kind) {
+      var el = document.getElementById('status');
+      if (el) { el.className='status '+(kind||''); el.textContent=msg; }
+    }
+    document.getElementById('btnLoadCustomColor').addEventListener('click', () => loadEngineConfig());
+
+    // ── File drop zone ────────────────────────────────────────
+    var dropZone=document.getElementById('drop'), fileInput=document.getElementById('file');
+    if (dropZone && fileInput) {
+      dropZone.addEventListener('click', ()=>fileInput.click());
+      dropZone.addEventListener('dragover', e=>{e.preventDefault();dropZone.classList.add('hover');});
+      dropZone.addEventListener('dragleave', ()=>dropZone.classList.remove('hover'));
+      dropZone.addEventListener('drop', e=>{e.preventDefault();dropZone.classList.remove('hover');if(e.dataTransfer.files[0])loadTargetFile(e.dataTransfer.files[0]);});
+      fileInput.addEventListener('change', e=>{if(e.target.files[0])loadTargetFile(e.target.files[0]);});
+    }
+
+    async function loadTargetFile(file) {
+      try {
+        var buf = await file.arrayBuffer();
+        loadedFileBytes = new Uint8Array(buf);
+        loadedFile = file;
+        currentFileName = file.name;
+        var info=document.getElementById('fileDropInfo');
+        if (info) info.innerHTML='📁 Đã nhận diện: <b>'+file.name+'</b> ('+loadedFileBytes.length.toLocaleString()+' bytes)';
+        setStatus('Đã sẵn sàng ghi đè file "'+file.name+'"!','ok');
+        serverDownloadId=null;
+        document.getElementById('btnSave').disabled=true;
+      } catch(err) { setStatus('❌ Lỗi đọc file: '+err.message,'err'); }
+    }
+
+    // ── Cấu hình màu qua server ───────────────────────────────
+    async function loadEngineConfig() {
+      if (!licenseToken) return;
+      try {
+        var r = await fetch(API_BASE + '/engine-config', {
+          headers: { 'Authorization': 'Bearer ' + licenseToken }
+        });
+        var d = await r.json();
+        if (!r.ok) throw new Error(d.error || 'Không tải được cấu hình màu');
+        var container = document.getElementById('masks');
+        container.innerHTML = '';
+        currentColors = {};
+        (d.fields || []).forEach(function(field) {
+          currentColors[field.id] = field.value;
+          var card = document.createElement('div');
+          card.className = 'card-mask';
+          if (field.kind === 'float') {
+            card.innerHTML = '<header><span class="title">📏 </span></header>' +
+              '<div class="float-row"><input type="range" id="' + (field.label === 'ĐỘ DÀY VIỀN' ? 'outlineSlider' : 'floatSlider-' + field.id) + '" data-role="slider" min="' + (field.min ?? 0) + '" max="' + (field.max ?? 50) + '" step="' + (field.step ?? 0.1) + '"><input type="text" id="' + (field.label === 'ĐỘ DÀY VIỀN' ? 'outlineValue' : 'floatValue-' + field.id) + '" data-role="num" inputmode="decimal" spellcheck="false"></div>';
+            card.querySelector('.title').textContent += field.label;
+            var slider = card.querySelector('[data-role="slider"]');
+            var num = card.querySelector('[data-role="num"]');
+            function refreshFloat(value) {
+              var v = Number(value); if (!Number.isFinite(v)) return;
+              v = Math.min(Math.max(v, Number(slider.min)), Number(slider.max));
+              currentColors[field.id] = String(v);
+              slider.value = String(v); num.value = String(Math.round(v * 100) / 100);
+            }
+            slider.addEventListener('input', function() { refreshFloat(slider.value); });
+            num.addEventListener('input', function() { if (num.value.trim() !== '') refreshFloat(num.value); });
+            refreshFloat(field.value);
+          } else {
+            card.innerHTML = '<header><span class="title"></span></header>' +
+              '<div class="mask-grid"><div class="swatch" data-role="swatch"></div>' +
+              '<div><input type="text" data-role="hex" spellcheck="false"></div>' +
+              '<div><input type="color" data-role="picker"></div></div>';
+            card.querySelector('.title').textContent = field.label;
+            var hex = card.querySelector('[data-role="hex"]');
+            var picker = card.querySelector('[data-role="picker"]');
+            var swatch = card.querySelector('[data-role="swatch"]');
+            function refresh(value) {
+              var clean = String(value).replace(/^#/, '').toUpperCase();
+              if (!/^[0-9A-F]{8}$/.test(clean)) return;
+              currentColors[field.id] = '#' + clean;
+              hex.value = '#' + clean; picker.value = '#' + clean.slice(0, 6);
+              swatch.style.setProperty('--c', 'rgba(' + parseInt(clean.slice(0,2),16) + ',' + parseInt(clean.slice(2,4),16) + ',' + parseInt(clean.slice(4,6),16) + ',' + (parseInt(clean.slice(6,8),16)/255) + ')');
+            }
+            hex.addEventListener('input', function() { refresh(hex.value); });
+            picker.addEventListener('input', function() { refresh(picker.value + 'FF'); });
+            refresh(field.value);
+          }
+          container.appendChild(card);
+        });
+        document.getElementById('hexOutputBox').textContent =
+          Object.keys(currentColors).length + ' thông số màu/độ dày đã nạp từ server';
+        setStatus('Đã nạp cấu hình màu an toàn từ server.', 'ok');
+      } catch (e) {
+        setStatus('❌ Không tải được cấu hình màu: ' + e.message, 'err');
+      }
+    }
+
+    // ── Patch file qua server ─────────────────────────────────
+    async function doPatchServer() {
+      if (!isKeyVerified || !licenseToken) { setStatus('❌ Chưa kích hoạt key! Nhập key VIP trước.','err'); return; }
+      // Re-check phiên key còn active; raw key không cần lưu hoặc gửi lại.
+      try {
+        var ckr = await fetch(API_BASE + '/engine-config', {
+          headers:{'Authorization':'Bearer '+licenseToken}
+        });
+        var ckd = await ckr.json();
+        if (!ckr.ok || !ckd.fields) {
+          isKeyVerified = false;
+          licenseToken = null;
+          setStatus('🔒 Key đã bị khoá hoặc hết hạn! Không thể patch.','err');
+          setTimeout(()=>location.reload(), 2000);
+          return;
+        }
+      } catch(e) { /* bỏ qua lỗi mạng check key, tiếp tục */ }
+      if (!loadedFileBytes) { setStatus('❌ Chưa nạp file! Chọn file cần patch trước.','err'); return; }
+      if (!Object.keys(currentColors).length) { setStatus('❌ Chưa có cấu hình màu! Hãy nhập lại key.','err'); return; }
+
+      var progressWrap=document.getElementById('patchProgress');
+      var progressFill=document.getElementById('patchProgressFill');
+      var progressLabel=document.getElementById('patchProgressLabel');
+      var progressPct=document.getElementById('patchProgressPct');
+      var btn=document.getElementById('btnExecutePatch');
+
+      btn.disabled=true;
+      progressWrap.classList.add('show');
+      progressFill.style.width='0%';
+      progressLabel.textContent='Đang đọc file...';
+      progressPct.textContent='20%';
+      progressFill.style.width='20%';
+
+      var step='init';
+      try {
+        step='read-file';
+        // Đọc file thành base64
+        var fileBase64 = await new Promise((resolve,reject)=>{
+          var reader=new FileReader();
+          reader.onload=e=>resolve(e.target.result.split(',')[1]);
+          reader.onerror=()=>reject(new Error('FileReader lỗi'));
+          reader.readAsDataURL(loadedFile);
+        });
+
+        progressFill.style.width='50%'; progressPct.textContent='50%';
+        progressLabel.textContent='Server đang xử lý patch...';
+
+        step='fetch-patch';
+        var r = await fetch(API_BASE + '/patch-chams', {
+          method:'POST',
+          headers:{'Content-Type':'application/json','Authorization':'Bearer '+licenseToken},
+          body: JSON.stringify({ colors:currentColors, fileBase64, fileName:currentFileName })
+        });
+
+        progressFill.style.width='80%'; progressPct.textContent='80%';
+
+        step='parse-json';
+        var rawText = await r.text();
+        var d;
+        try { d=JSON.parse(rawText); } catch(pe) { throw new Error('[parse-json] Server trả về không phải JSON (status '+r.status+'): '+rawText.slice(0,120)); }
+
+        if (!r.ok || !d.ok) {
+          progressWrap.classList.remove('show'); btn.disabled=false;
+          setStatus('❌ Patch thất bại! ' + (d&&d.error||'Lỗi không xác định'),'err');
+          return;
+        }
+
+        serverDownloadId = d.downloadId;
+        progressFill.classList.add('done'); progressFill.style.width='100%'; progressPct.textContent='100%';
+        progressLabel.textContent='✓ Patch thành công '+d.patchCount+' vị trí hex!';
+
+        setStatus('⚡ VÁ FILE THÀNH CÔNG tại '+d.patchCount+' vị trí! Kích thước giữ nguyên.','ok');
+        document.getElementById('btnSave').disabled=false;
+
+        setTimeout(()=>{ progressWrap.classList.remove('show'); progressFill.classList.remove('done'); }, 3000);
+      } catch(e) {
+        progressWrap.classList.remove('show');
+        setStatus('❌ Lỗi kết nối! ['+step+'] '+(e&&e.message||String(e)),'err');
+      }
+      btn.disabled=false;
+    }
+
+    document.getElementById('btnClearReplaceHex').addEventListener('click', function() {
+      var box = document.getElementById('txtReplaceHex');
+      if (box) box.value = '';
+      currentColors = {};
+      setStatus('🗑️ Đã xóa mã Hex thay thế cũ. Chỉnh lại màu/độ dày viền trước khi patch.', 'ok');
+    });
+
+    // ── Tải file từ server ────────────────────────────────────
+    document.getElementById('btnSave').addEventListener('click', () => {
+      if (!serverDownloadId) { setStatus('❌ Chưa có file để tải! Hãy patch trước.','err'); return; }
+      var downloadUrl = API_BASE + '/download/' + serverDownloadId + '?license=' + encodeURIComponent(licenseToken);
+      // Dùng iframe ẩn để tải — không mở tab mới, tương thích iOS/Android
+      var existingFrame=document.getElementById('hiddenDownloadFrame');
+      if (existingFrame) existingFrame.remove();
+      var frame=document.createElement('iframe');
+      frame.id='hiddenDownloadFrame'; frame.style.display='none';
+      frame.src=downloadUrl;
+      document.body.appendChild(frame);
+      setTimeout(()=>{ if(frame.parentNode) frame.remove(); },10000);
+      setStatus('💾 Đã tải thành công file thành phẩm!','ok');
+    });
+
+    document.getElementById('btnReset').addEventListener('click', () => {
+      loadEngineConfig();
+      setStatus('↺ Đã khôi phục dữ liệu màu về mặc định.','ok');
+    });
+
+    // Tự đăng nhập lại khi reload/đóng mở trang; chỉ xóa key khi server báo key không hợp lệ.
+    window.addEventListener('DOMContentLoaded', function() {
+      autoRestoreChamsLogin();
+    });
+  </script>
+</body>
+</html>

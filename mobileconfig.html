@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#07110d">
+  <title>NextDNS Profile Builder</title>
+  <style>
+    :root{--bg:#07110d;--panel:#0d1b15;--panel2:#12251c;--line:#1c3b2b;--text:#f4fff8;--muted:#91ad9e;--green:#35e98b;--cyan:#5edcff;--red:#ff7185;--gold:#ffd166;--radius:18px}
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 15% 0%,#123923 0,#07110d 42%,#040806 100%);color:var(--text)}
+    body{padding:24px 14px 48px}.shell{width:min(920px,100%);margin:auto}.brand{display:flex;align-items:center;gap:12px;margin:8px 0 26px}.brand-mark{display:grid;place-items:center;width:44px;height:44px;border-radius:14px;background:var(--green);color:#031109;font-weight:950;font-size:20px;box-shadow:0 0 26px #35e98b55}.brand h1{font-size:18px;line-height:1.1;margin:0}.brand p{margin:5px 0 0;color:var(--muted);font-size:12px}
+    .card{background:linear-gradient(145deg,#102119ee,#08120df2);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:0 18px 60px #0008;margin-bottom:16px}.lock{max-width:470px;margin:8vh auto 0;text-align:center}.lock h2{margin:0 0 9px;font-size:22px}.lock p{color:var(--muted);font-size:13px;line-height:1.55;margin:0 0 20px}.lock .device{font:11px ui-monospace,SFMono-Regular,monospace;color:var(--cyan);background:#07110d;border:1px dashed #28604a;padding:9px;border-radius:10px;margin:14px 0 18px;word-break:break-all}.lock .device button{display:block;margin:8px auto 0;border:0;background:none;color:var(--green);font-size:11px;cursor:pointer}
+    .hidden{display:none!important}.eyebrow{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--green);font-weight:800;margin-bottom:7px}.title{font-size:21px;margin:0 0 7px}.sub{font-size:13px;line-height:1.55;color:var(--muted);margin:0}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.full{grid-column:1/-1}.field{display:flex;flex-direction:column;gap:7px}.label{font-size:11px;color:#c8dfd0;font-weight:800;letter-spacing:.05em}.hint{font-size:11px;color:var(--muted);line-height:1.45}.input,textarea{width:100%;border:1px solid #254837;border-radius:12px;background:#07110d;color:var(--text);padding:12px 13px;font:14px inherit;outline:none;transition:.2s}.input:focus,textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px #35e98b18}textarea{min-height:122px;resize:vertical;line-height:1.5}.file{border:1px dashed #397457;border-radius:14px;background:#07110d;padding:15px;color:var(--muted);font-size:12px}.file input{display:block;width:100%;margin-top:9px;color:var(--text)}.row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:18px}.badge{border:1px solid #2c7653;color:var(--green);border-radius:999px;padding:6px 10px;font-size:10px;font-weight:800;white-space:nowrap}.btn{border:1px solid #2b7955;border-radius:12px;padding:12px 16px;background:#35e98b;color:#031109;font-weight:900;cursor:pointer;transition:.2s}.btn:hover{transform:translateY(-1px);filter:brightness(1.07)}.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}.btn.secondary{background:transparent;color:var(--green);border-color:#27513e}.btn.danger{background:transparent;border-color:#7d3041;color:var(--red)}.actions{display:flex;gap:10px;align-items:center;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}.status{min-height:22px;margin-top:14px;font-size:12px;line-height:1.45;color:var(--muted)}.status.ok{color:var(--green)}.status.err{color:var(--red)}.status.info{color:var(--cyan)}.notice{padding:12px 14px;border:1px solid #335e48;border-radius:12px;background:#0b1a12;color:#b5d4bf;font-size:12px;line-height:1.5;margin-top:14px}.result{border-color:#2d8158;background:linear-gradient(145deg,#102c1e,#0b1710)}.result strong{color:var(--green)}.result a{display:inline-block;margin-top:12px;color:#04130b;background:var(--green);border-radius:10px;padding:11px 14px;font-weight:900;text-decoration:none}.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}.metric{background:#07110d;border:1px solid #214633;border-radius:12px;padding:12px}.metric b{display:block;color:var(--green);font-size:18px}.metric span{font-size:10px;color:var(--muted)}.top-actions{margin-left:auto}.footer{text-align:center;color:#678472;font-size:11px;margin-top:20px}.footer a{color:var(--green);text-decoration:none}
+    @media(max-width:650px){body{padding:14px 10px 34px}.card{padding:17px}.grid{grid-template-columns:1fr}.full{grid-column:auto}.lock{margin-top:5vh}.section-head{display:block}.section-head .badge{display:inline-block;margin-top:12px}.summary{grid-template-columns:1fr 1fr}.summary .metric:last-child{grid-column:1/-1}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="brand">
+      <div class="brand-mark">N</div>
+      <div><h1>NextDNS Profile Builder</h1><p>Quản lý miền và tạo cấu hình mobileconfig trên Railway</p></div>
+      <div class="top-actions"><button class="btn secondary hidden" id="logoutBtn" type="button">Đăng xuất</button></div>
+    </header>
+
+    <section class="card lock" id="lockScreen">
+      <div class="eyebrow">Protected workspace</div>
+      <h2>Nhập key để sử dụng</h2>
+      <p>Key được xác thực ở server. Giao diện có thể bị chỉnh sửa, nhưng mọi thao tác NextDNS và tạo file vẫn cần phiên hợp lệ phía server.</p>
+      <input class="input" id="accessKey" type="text" autocomplete="off" placeholder="MAKECHAM-XXXXXXXX">
+      <div class="device">Device ID: <span id="deviceId">Đang tạo…</span><button type="button" id="copyDevice">Sao chép Device ID</button></div>
+      <button class="btn" id="loginBtn" type="button">Xác thực key</button>
+      <div class="status" id="loginStatus"></div>
+    </section>
+
+    <section id="builder" class="hidden">
+      <div class="card">
+        <div class="section-head">
+          <div><div class="eyebrow">01 / NextDNS</div><h2 class="title">Cập nhật danh sách miền</h2><p class="sub">API key chỉ được dùng trong request hiện tại, không lưu vào trình duyệt, database hoặc log.</p></div>
+          <span class="badge" id="licenseBadge">Đã xác thực</span>
+        </div>
+        <div class="grid">
+          <label class="field"><span class="label">NextDNS API key</span><input class="input" id="nextDnsApiKey" type="password" autocomplete="off" placeholder="Dán API key NextDNS"></label>
+          <label class="field"><span class="label">NextDNS profile ID</span><input class="input" id="profileId" autocomplete="off" placeholder="Ví dụ: abc123"></label>
+          <label class="field"><span class="label">Miền cho phép</span><textarea id="allowlist" placeholder="m.example.com&#10;cdn.example.com"></textarea><span class="hint">Mỗi miền một dòng; cũng chấp nhận dấu phẩy hoặc dấu chấm phẩy.</span></label>
+          <label class="field"><span class="label">Miền chặn</span><textarea id="denylist" placeholder="ads.example.com&#10;tracker.example.com"></textarea><span class="hint">Miền đã có sẵn sẽ được bỏ qua, không tạo trùng.</span></label>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-head"><div><div class="eyebrow">02 / Template</div><h2 class="title">Nạp file mẫu mobileconfig</h2><p class="sub">File mẫu nên có PayloadDisplayName, PayloadDescription và URL NextDNS hoặc placeholder <code>{{NEXTDNS_ID}}</code>.</p></div></div>
+        <div class="grid">
+          <label class="field full"><span class="label">File mẫu</span><div class="file"><span id="fileLabel">Chưa chọn file</span><input id="templateFile" type="file" accept=".mobileconfig,.xml,application/x-apple-aspen-config,text/xml,application/xml"></div></label>
+          <label class="field"><span class="label">Tên cấu hình</span><input class="input" id="configName" maxlength="120" placeholder="Ví dụ: Jerry NextDNS"></label>
+          <label class="field"><span class="label">Mô tả cấu hình</span><input class="input" id="configDescription" maxlength="500" placeholder="Mô tả hiển thị trên thiết bị"></label>
+        </div>
+        <div class="notice">Khi tạo, hệ thống sẽ thay tên và mô tả vào payload gốc; thay ID ở URL NextDNS hoặc phần sau <code>.antiban.</code>, rồi trả về file đã tạo.</div>
+        <div class="actions"><button class="btn" id="generateBtn" type="button">Cập nhật NextDNS &amp; tạo file</button></div>
+        <div class="status" id="buildStatus"></div>
+      </div>
+
+      <div class="card result hidden" id="resultCard">
+        <div class="eyebrow">Completed</div><h2 class="title">Đã tạo cấu hình</h2><p class="sub" id="resultText"></p>
+        <div class="summary"><div class="metric"><b id="allowAdded">0</b><span>miền cho phép thêm</span></div><div class="metric"><b id="denyAdded">0</b><span>miền chặn thêm</span></div><div class="metric"><b id="idReplacements">0</b><span>vị trí ID đã thay</span></div></div>
+        <a id="downloadLink" href="#" download>Tải mobileconfig</a>
+      </div>
+    </section>
+    <div class="footer">Phiên tạo file có thời hạn ngắn. <a href="/admin">liên hệ</a></div>
+  </main>
+
+  <script>
+    (function(){
+      var API='__API_BASE__';
+      if(API==='__API_BASE__') API='https://chamv2-production.up.railway.app/api';
+      var licenseToken=null, savedKeyName='nextdns_builder_key';
+      function $(id){return document.getElementById(id);}
+      function status(id,text,kind){var el=$(id);el.textContent=text||'';el.className='status '+(kind||'');}
+      function getDeviceId(){
+        var existing=localStorage.getItem('chams_device_id');
+        if(existing && /^MAKECHAM-[A-Z0-9]{8}$/.test(existing)) return existing;
+        var chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', bytes=new Uint8Array(8), out='';
+        if(window.crypto&&crypto.getRandomValues) crypto.getRandomValues(bytes); else for(var i=0;i<8;i++) bytes[i]=Math.floor(Math.random()*256);
+        bytes.forEach(function(b){out+=chars[b%chars.length];});
+        existing='MAKECHAM-'+out; localStorage.setItem('chams_device_id',existing); return existing;
+      }
+      var DEVICE_ID=getDeviceId(); $('deviceId').textContent=DEVICE_ID;
+      $('copyDevice').onclick=function(){navigator.clipboard?.writeText(DEVICE_ID).then(function(){status('loginStatus','Đã sao chép Device ID.','ok');}).catch(function(){});};
+      function showBuilder(type){
+        $('lockScreen').classList.add('hidden'); $('builder').classList.remove('hidden'); $('logoutBtn').classList.remove('hidden');
+        $('licenseBadge').textContent='Đã xác thực '+(type||''); status('loginStatus','','');
+      }
+      function clearSession(){
+        licenseToken=null; $('builder').classList.add('hidden'); $('lockScreen').classList.remove('hidden'); $('logoutBtn').classList.add('hidden');
+      }
+      async function validateKey(){
+        var key=$('accessKey').value.trim(); if(!key){status('loginStatus','Vui lòng nhập key.','err');return;}
+        $('loginBtn').disabled=true; status('loginStatus','Đang xác thực ở server…','info');
+        try{
+          var r=await fetch(API+'/validate-key',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:key,deviceId:DEVICE_ID})});
+          var d=await r.json();
+          if(!r.ok||!d.success) throw new Error(d.error||'Key không hợp lệ.');
+          licenseToken=d.licenseToken; localStorage.setItem(savedKeyName,key.toUpperCase()); showBuilder(d.type);
+        }catch(e){status('loginStatus',e.message||'Không thể kết nối server.','err');}
+        $('loginBtn').disabled=false;
+      }
+      $('loginBtn').onclick=validateKey;
+      $('accessKey').onkeydown=function(e){if(e.key==='Enter')validateKey();};
+      $('logoutBtn').onclick=function(){localStorage.removeItem(savedKeyName);clearSession();status('loginStatus','Đã đăng xuất.','info');};
+      $('templateFile').onchange=function(){var f=this.files[0];$('fileLabel').textContent=f?f.name+' ('+f.size.toLocaleString()+' bytes)':'Chưa chọn file';};
+      function readBase64(file){return new Promise(function(resolve,reject){var reader=new FileReader();reader.onload=function(){resolve(String(reader.result).split(',')[1]||'');};reader.onerror=function(){reject(new Error('Không đọc được file mẫu.'));};reader.readAsDataURL(file);});}
+      function setDownload(name,id){
+        $('downloadLink').href=API+'/download/'+encodeURIComponent(id)+'?license='+encodeURIComponent(licenseToken);
+        $('downloadLink').download=name||'nextdns-profile.mobileconfig';
+      }
+      async function generate(){
+        if(!licenseToken){status('buildStatus','Phiên key không còn hợp lệ. Hãy nhập key.','err');clearSession();return;}
+        var file=$('templateFile').files[0], apiKey=$('nextDnsApiKey').value.trim(), profileId=$('profileId').value.trim(), name=$('configName').value.trim(), desc=$('configDescription').value.trim();
+        if(!apiKey||!profileId||!name||!desc||!file){status('buildStatus','Vui lòng nhập đủ thông tin và chọn file mẫu.','err');return;}
+        $('generateBtn').disabled=true; status('buildStatus','Đang kiểm tra profile và cập nhật NextDNS…','info'); $('resultCard').classList.add('hidden');
+        try{
+          var templateBase64=await readBase64(file);
+          var r=await fetch(API+'/mobileconfig/generate',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+licenseToken},body:JSON.stringify({nextDnsApiKey:apiKey,profileId:profileId,allowlist:$('allowlist').value,denylist:$('denylist').value,configName:name,configDescription:desc,templateBase64:templateBase64})});
+          var d=await r.json();
+          if(r.status===401){clearSession();throw new Error('Phiên key đã hết hạn hoặc bị khóa.');}
+          if(!r.ok||!d.ok) throw new Error(d.error||'Không thể tạo mobileconfig.');
+          $('allowAdded').textContent=d.allowlist?.added||0; $('denyAdded').textContent=d.denylist?.added||0; $('idReplacements').textContent=d.profileIdReplacements||0;
+          $('resultText').textContent='Profile '+d.profileId+' đã được cập nhật. Link tải chỉ dùng được với phiên key hiện tại và sẽ hết hạn sau 5 phút.';
+          setDownload(name+'.mobileconfig',d.downloadId); $('resultCard').classList.remove('hidden'); status('buildStatus','Hoàn tất.','ok');
+        }catch(e){status('buildStatus',e.message||'Lỗi không xác định.','err');}
+        $('generateBtn').disabled=false;
+      }
+      $('generateBtn').onclick=generate;
+      window.addEventListener('DOMContentLoaded',function(){
+        var saved=localStorage.getItem(savedKeyName);
+        if(saved){$('accessKey').value=saved;validateKey();}
+      });
+    })();
+  </script>
+</body>
+</html>

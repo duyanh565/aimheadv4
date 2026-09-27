@@ -1,0 +1,14 @@
+[variables]
+NPM_CONFIG_AUDIT = "false"
+NPM_CONFIG_FUND = "false"
+NPM_CONFIG_UPDATE_NOTIFIER = "false"
+NPM_CONFIG_PREFER_ONLINE = "true"
+
+[phases.install]
+cmds = ["npm install --omit=dev --no-package-lock --ignore-scripts --no-audit --no-fund --prefer-online"]
+
+[phases.build]
+cmds = ["node --check server.js"]
+
+[start]
+cmd = "node server.js"
