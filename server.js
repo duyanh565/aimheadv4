@@ -343,6 +343,13 @@ function parseDomainList(input) {
   return domains;
 }
 
+function normalizeNextDnsDomain(domain, listName) {
+  // NextDNS lưu miền trong Denylist theo dạng wildcard, giống giao diện
+  // my.nextdns.io: *.example.com. Cho phép người dùng nhập cả hai dạng.
+  if (listName === 'denylist' && !domain.startsWith('*.')) return '*.' + domain;
+  return domain;
+}
+
 async function nextDnsRequest(apiKey, endpoint, method = 'GET', body) {
   const response = await fetch('https://api.nextdns.io' + endpoint, {
     method,
@@ -378,7 +385,8 @@ async function updateNextDnsList(apiKey, profileId, listName, domains) {
   let added = 0;
   let skipped = 0;
   const rejected = [];
-  for (const domain of domains) {
+  for (const rawDomain of domains) {
+    const domain = normalizeNextDnsDomain(rawDomain, listName);
     if (current.has(domain)) {
       skipped++;
       continue;
