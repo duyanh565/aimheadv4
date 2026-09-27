@@ -326,7 +326,11 @@ function requireLicense(req, res, next) {
 }
 
 // ── NextDNS + mobileconfig builder ────────────────────────────
-const DOMAIN_RE = /^(?:\*\.)?(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/i;
+// NextDNS chấp nhận các hostname có số ở nhãn cuối và dấu "_" trong
+// nhãn (ví dụ: *.freefire.diamond.170 hoặc ...clang.1_0).
+// Vẫn giữ giới hạn độ dài và yêu cầu ít nhất hai nhãn để tránh nhận
+// chuỗi tùy ý không phải tên miền.
+const DOMAIN_RE = /^(?:\*\.)?(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9_-]{0,61}[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9_-]{0,61}[a-z0-9])?$/i;
 
 function parseDomainList(input) {
   const valid = [];
