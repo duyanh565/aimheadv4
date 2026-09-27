@@ -10,6 +10,7 @@ const bcrypt     = require('bcryptjs');
 const jwt        = require('jsonwebtoken');
 const path       = require('path');
 const fs         = require('fs');
+const { domainToASCII } = require('node:url');
 const { DatabaseSync } = require('node:sqlite');
 const { randomInt, randomUUID, createHmac } = require('crypto');
 
@@ -344,11 +345,13 @@ function parseDomainList(input) {
 }
 
 function normalizeNextDnsDomain(domain, listName) {
-  // NextDNS UI có thể hiển thị denylist với tiền tố wildcard, nhưng API
-  // nhận domain gốc (ví dụ example.com). Chuẩn hóa cả input và dữ liệu GET
-  // để không gửi *.example.com và không thêm trùng domain đã có.
-  const normalized = String(domain || '').trim().toLowerCase().replace(/\.$/, '');
-  return listName === 'denylist' ? normalized.replace(/^\*\./, '') : normalized;
+  // Khớp với giao diện NextDNS: bỏ wildcard ở denylist rồi chuyển IDN sang
+  // ASCII/Punycode. domainToASCII cũng loại một số ký tự định dạng vô hình
+  // thường bị dính khi copy/paste. Giữ bản gốc để NextDNS trả lỗi cụ thể nếu
+  // giá trị vẫn không hợp lệ.
+  let normalized = String(domain || '').trim().toLowerCase().replace(/\.$/, '');
+  if (listName === 'denylist') normalized = normalized.replace(/^\*\./, '');
+  return domainToASCII(normalized) || normalized;
 }
 
 async function nextDnsRequest(apiKey, endpoint, method = 'GET', body) {
